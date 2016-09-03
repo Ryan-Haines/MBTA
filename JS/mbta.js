@@ -7,11 +7,41 @@ $(document).ready(function() {
   setInterval(main, 60000);
 
   //get data from the URL and put it in an array
+  //for testing/debugging offline: don't worry about cross-site perms
+  
   function getSchedule(mbta){
     var msg = $.ajax({type: "GET", url: mbta, async: false}).responseText;
+    console.log(msg);
     var schedule = $.csv.toArrays(msg);
     return schedule;
   }
+
+  /*
+  //get data from the URL and put it in an array
+  //uses a proxy server
+  function getSchedule(mbta){
+    // Handle form submit.
+    var proxy = 'proxy.php';
+    var url = proxy + '?url=' + encodeURIComponent(mbta);
+    // Make JSON request.
+    console.log("making JSON request at "+url);
+    var response; 
+    var schedule;
+
+    response = $.ajax({
+      dataType: "json",
+      url: url,
+      async: false
+    }).responseText;
+    //console.log("response");
+    //console.log(response);
+    //this could be a single line but is more readable as 3
+    schedule = $.parseJSON('[' + response + ']');
+    schedule = schedule[0].contents;
+    schedule = $.csv.toArrays(schedule);
+    return schedule;
+  }
+  */
 
   //given the schedule, convert every epoch to a date
   //epoch date columns are predefined in dataspec as column 0 and column 4
@@ -46,6 +76,10 @@ $(document).ready(function() {
     var lastCell = "<div class='Rtable-cell lastCell'>"+cellData+"</div>";
     var delayTime = 0;
 
+    //insert the time the schedule was made
+    $("#retrievalTime").text(epochToDate(schedule[1][0]));
+
+    //insert each train schedule
     for(var i = 1; i< schedule.length; i++){
       for(var j = 0; j < schedule[0].length; j++){
         cellData=schedule[i][j];
@@ -76,6 +110,7 @@ $(document).ready(function() {
   //What code we run to get the schedule and render it
   function main(){
     mbtaSchedule = getSchedule(mbtaURL);
+    //mbtaSchedule = getSchedule(proxy);
     mbtaSchedule = epochsToDates(mbtaSchedule);
     insertTrainInfo(mbtaSchedule);
     console.log("got new schedule");
