@@ -99,6 +99,32 @@ body {
   color: white;
 }
 
+/*Status colors
+=================================== */
+.OnTime{
+  background:white;
+}
+ 
+.Cancelled, .Departed{
+  background:peru;
+}
+
+.Arriving{
+  background:palegoldenrod;
+}
+
+.End, .Infotofollow, .TBD, .Delayed, .Late, .Hold{
+  background:tomato;
+}
+
+.Arrived, .AllAboard, .NowBoarding{
+  background:lightgreen;
+}
+
+.other{
+  background:white;
+}
+
 /* Responsive
 ==================================== */
 @media all and (max-width: 800px) {
