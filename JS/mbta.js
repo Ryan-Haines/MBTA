@@ -2,10 +2,11 @@ $(document).ready(function() {
   var mbtaURL = "http://developer.mbta.com/lib/gtrtfs/Departures.csv";
   //var mbtaURL = "Departures-test.csv";
   var mbtaSchedule; //array holding the converted CSV
+  var weekday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  //gets a new schedule every n seconds
-  main();
-  setInterval(main, 60000);
+  //Kick it all off
+  init();
 
   //get data from the URL and put it in an array
   //for testing/debugging offline: don't worry about cross-site perms
@@ -63,27 +64,35 @@ $(document).ready(function() {
     if(!isNaN(epoch)){//check that we're given a number
       var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
       d.setUTCSeconds(epoch);
-      d=d+"";
-      d=d.replace(":00 GMT-0400 (EDT)", "");
-      return d;
+      var fd =""; //formatted date
+      var minutes = d.getMinutes();
+      var hours = d.getHours();
+      if(hours < 10)
+        hours = "0"+hours;
+      if(minutes < 10)
+        minutes = "0"+minutes; 
+      fd += weekday[d.getDay()] + " ";
+      fd += months[d.getMonth()] + " ";
+      fd += d.getDate() + " "
+      fd += hours+":"+minutes;
+      return fd;
     }
     else
       console.log("cannot convert this value");
   }
 
-  //returns the current time in 24 hour HH:MM format
+  //returns the current time as Day Month Date HH:MM 24-hour time
   function getCurrentTime(){
     var d = new Date();
-
+    var fd ="";
     var hours = d.getHours();
+    var minutes = d.getMinutes();
     if(hours < 10)
       hours = "0"+hours;
-    
-    var minutes = d.getMinutes();
     if(minutes < 10)
       minutes = "0"+minutes;
-    
-    return hours+":"+minutes;
+    fd = weekday[d.getDay()] + " " + months[d.getMonth()] + " " + d.getDate() + " " + hours+":"+minutes;
+    return fd;
   }
 
   //given a schedule, insert that information into the page as HTML
@@ -108,12 +117,15 @@ $(document).ready(function() {
           cellData = "TBD";
         }
         
-        if(j!=0 && j !=5 && j !=7){
+        if(j!=0 && j!=1 && j !=5 && j !=7){ //base case, no special cell classes
           cell = "<div class='Rtable-cell'>"+cellData+"</div>";
           $(".Rtable").append(cell);
         }
-        else if(j==7){ //special case for last cell in a row
-          
+        else if(j==1){ //special case for first cell in row
+          cell = "<div class='Rtable-cell firstCell'>"+cellData+"</div>"
+          $(".Rtable").append(cell);
+        }
+        else if(j==7){ //special case for last cell in row 
           //set color depending on train status
           //colors defined in CSS file
           var statusColor;
@@ -162,11 +174,17 @@ $(document).ready(function() {
                   break;
           }
 
+          //Generating delay time message
           if(delayTime > 0){
-            cellData+= ", " + delayTime/60 + " minute delay"
+            var delaySize = 0;
+            magnitude =["second", "minute", "or more hour"];
+            while(delayTime > 60 && delaySize < 3){
+              delaySize++;
+              delayTime/=60;
+            }
+            cellData+= ", " + Math.round(delayTime) + " " + magnitude[delaySize] + "  delay";
           }
-
-
+          
           cell = "<div class='Rtable-cell "+statusColor+" lastCell'>"+cellData+"</div>";
           $(".Rtable").append(cell);
         }
@@ -175,7 +193,49 @@ $(document).ready(function() {
     }
   }
 
-  //What code we run to get the schedule and render it
+  //scroll to the searched location 
+  //usage: $("#selector").scrollTo();
+  $.fn.scrollView = function () {
+    return this.each(function () {
+        $('html, body').animate({
+            scrollTop: $(this).offset().top
+        }, 500);
+    });
+  }
+
+  //bind all buttons
+  function bindButtons(){
+    //search button scrolls to first instance of searched location
+    $("#search").bind( "click", function() {
+      var destination = $("#destination").val();
+      if (destination == ""){
+        alert("Please enter a destination.");
+        return;
+      }
+      //scrolls to the first cell of the row containing the destination element
+      var scrollTo = $(".Rtable-cell:contains("+destination+")" ).first().prevAll(".firstCell").first();
+      if(!scrollTo[0]){
+        alert("Destination not found");
+      }
+      scrollTo.scrollView();
+    });
+
+    //bind the enter key to the textbox
+    $("#destination").keyup(function(event){
+        if(event.keyCode == 13){
+            $("#search").click();
+        }
+    });
+  }
+
+  //initial code to run once
+  function init(){
+    bindButtons();
+    main();
+    setInterval(main, 60000);
+  }
+
+  //What code to run every minute
   function main(){
     mbtaSchedule = getSchedule(mbtaURL);
     mbtaSchedule = epochsToDates(mbtaSchedule);

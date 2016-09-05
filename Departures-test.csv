@@ -19,8 +19,8 @@ TimeStamp,Origin,Trip,Destination,ScheduledTime,Lateness,Track,Status
 1472931245,South Station,1769,Readville,1472932200,0,,On Time
 1472931245,South Station,1037,Kingston,1472933400,0,,On Time
 1472931245,South Station,1511,Worcester / Union Station,1472934000,0,,On Time
-1472931245,South Station,1811,Providence,1472934900,0,,On Time
-1472931245,South Station,1771,Readville,1472935800,0,,On Time
+1472931245,South Station,1811,Providence,1472934900,3600,,Late
+1472931245,South Station,1771,Readville,1472935800,3601,,Late
 1472931245,South Station,1081,Greenbush,1472937000,0,,On Time
 1472931245,South Station,1611,Needham Heights,1472937000,0,,On Time
 1472931245,South Station,1713,Forge Park / 495,1472937600,0,,On Time

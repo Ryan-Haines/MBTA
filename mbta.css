@@ -19,11 +19,14 @@
   -ms-flex-positive: 1;
   flex-grow: 1;
   width: 100%;
-  padding: 0.8em 1.2em;
+  padding: 0.4em .6em;
   overflow: hidden;
   list-style: none;
   border: solid 3px white;
   background: rgba(112, 128, 144, 0.2);
+
+  height:50px;
+
 }
 
 .Rtable-cell > h1,
@@ -78,7 +81,7 @@ body {
   border-bottom: none;
 }
 
-/* Apply styles
+/* general styles
 ================================== */
 .Rtable {
   position: relative;
@@ -90,13 +93,13 @@ body {
   background-color: white;
   border-color: #e2e6e9;
 }
-/* Cell styles
-================================== */
-
 .headerCell {
   background-color: slategrey;
   border-color: #5a6673;
   color: white;
+}
+#logo{
+  margin-bottom:20px;
 }
 
 /*Status colors
