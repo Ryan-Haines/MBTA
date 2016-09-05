@@ -19,7 +19,6 @@ $(document).ready(function() {
   }
   */
   
-  
   //get data from the URL and put it in an array
   //uses a proxy server
   function getSchedule(mbta){
@@ -41,7 +40,6 @@ $(document).ready(function() {
     schedule = $.csv.toArrays(schedule);
     return schedule;
   }
-  
 
   //given the schedule, convert every epoch to a date
   //epoch date columns are predefined in dataspec as column 0 and column 4
@@ -236,11 +234,14 @@ $(document).ready(function() {
   function init(){
     bindButtons();
     main();
-    setInterval(main, 60000);
+    setInterval(main, 6000);
   }
 
   //What code to run every minute
   function main(){
+    //clear the old schedule
+    $(".headerCell").last().nextAll().remove();
+
     mbtaSchedule = getSchedule(mbtaURL);
     mbtaSchedule = epochsToDates(mbtaSchedule);
     insertTrainInfo(mbtaSchedule);
