@@ -234,10 +234,10 @@ $(document).ready(function() {
   function init(){
     bindButtons();
     main();
-    setInterval(main, 60000);
+    setInterval(main, 300000);
   }
 
-  //What code to run every minute
+  //What code to run on repeat
   function main(){
     //clear the old schedule
     $(".headerCell").last().nextAll().remove();
