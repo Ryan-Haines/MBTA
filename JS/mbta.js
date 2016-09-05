@@ -234,7 +234,7 @@ $(document).ready(function() {
   function init(){
     bindButtons();
     main();
-    setInterval(main, 6000);
+    setInterval(main, 60000);
   }
 
   //What code to run every minute
