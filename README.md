@@ -9,4 +9,4 @@ Uses PHP Simple Proxy to pull in the data https://github.com/cowboy/php-simple-p
 
 Uses JQuery CSV to parse the response effectively https://github.com/evanplaice/jquery-csv
 
-Updates automatically once a minute
+Updates automatically
