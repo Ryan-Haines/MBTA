@@ -19,6 +19,7 @@ $(document).ready(function() {
   }
   */
   
+  
   //get data from the URL and put it in an array
   //uses a proxy server
   function getSchedule(mbta){
@@ -97,7 +98,6 @@ $(document).ready(function() {
   function insertTrainInfo(schedule){
     var cellData;
     var cell;
-    var lastCell = "<div class='Rtable-cell lastCell'>"+cellData+"</div>";
     var delayTime = 0;
 
     //insert the time the schedule was made
@@ -106,72 +106,21 @@ $(document).ready(function() {
     //insert each train schedule
     for(var i = 1; i< schedule.length; i++){
       for(var j = 0; j < schedule[0].length; j++){
+        var extraClasses ="";//store extra classes
         cellData=schedule[i][j];
 
         if(j==5 && cellData > 0){ //if we have a delay, store the delay amount to add it to status
           delayTime = cellData;
         }
+        
+        if(j==1){ //special case for first cell in row
+          extraClasses +=" firstCell ";
+        }
         else if(j == 6 && cellData ===""){ //write "TBD" if no track is defined
           cellData = "TBD";
         }
-        
-        if(j!=0 && j!=1 && j !=5 && j !=7){ //base case, no special cell classes
-          cell = "<div class='Rtable-cell'>"+cellData+"</div>";
-          $(".Rtable").append(cell);
-        }
-        else if(j==1){ //special case for first cell in row
-          cell = "<div class='Rtable-cell firstCell'>"+cellData+"</div>"
-          $(".Rtable").append(cell);
-        }
         else if(j==7){ //special case for last cell in row 
-          //set color depending on train status
-          //colors defined in CSS file
-          var statusColor;
-          switch(cellData) {
-              case "On Time":
-                  statusColor = "OnTime";
-                  break;
-              case "Cancelled":
-                  statusColor="Cancelled";
-                  break;
-              case "Arriving":
-                  statusColor="Arriving";
-                  break;
-              case "End":
-                  statusColor="End";
-                  break;
-              case "Now Boarding":
-                  statusColor="NowBoarding";
-                  break;
-              case "Info to follow":
-                  statusColor="Infotofollow";
-                  break;
-              case "Arrived":
-                  statusColor="Arrived";
-                  break;
-              case "All Aboard":
-                  statusColor="AllAboard";
-                  break;
-              case "TBD":
-                  statusColor="TBD";
-                  break;
-              case "Departed":
-                  statusColor="Departed";
-                  break;
-              case "Delayed":
-                  statusColor="Delayed";
-                  break;
-              case "Late":
-                  statusColor="Late";
-                  break;
-              case "Hold":
-                  statusColor="Hold";
-                  break;        
-              default:
-                  statusColor = "other";
-                  break;
-          }
-
+          extraClasses += getStatusColor(cellData) + " lastCell ";
           //Generating delay time message
           if(delayTime > 0){
             var delaySize = 0;
@@ -182,8 +131,10 @@ $(document).ready(function() {
             }
             cellData+= ", " + Math.round(delayTime) + " " + magnitude[delaySize] + "  delay";
           }
-          
-          cell = "<div class='Rtable-cell "+statusColor+" lastCell'>"+cellData+"</div>";
+        }
+
+        if(j!=0 && j !=5){//don't append columns 0 and 5
+          cell = "<div class='Rtable-cell "+extraClasses+" '>"+cellData+"</div>";
           $(".Rtable").append(cell);
         }
       }
@@ -191,14 +142,52 @@ $(document).ready(function() {
     }
   }
 
-  //scroll to the searched location 
-  //usage: $("#selector").scrollTo();
-  $.fn.scrollView = function () {
-    return this.each(function () {
-        $('html, body').animate({
-            scrollTop: $(this).offset().top
-        }, 500);
-    });
+  //determine what class to add for coloring the status
+  function getStatusColor(status){
+    switch(status) {
+        case "On Time":
+            return  "OnTime";
+            break;
+        case "Cancelled":
+            return "Cancelled";
+            break;
+        case "Arriving":
+            return "Arriving";
+            break;
+        case "End":
+            return "End";
+            break;
+        case "Now Boarding":
+            return "NowBoarding";
+            break;
+        case "Info to follow":
+            return "Infotofollow";
+            break;
+        case "Arrived":
+            return "Arrived";
+            break;
+        case "All Aboard":
+            return "AllAboard";
+            break;
+        case "TBD":
+            return "TBD";
+            break;
+        case "Departed":
+            return "Departed";
+            break;
+        case "Delayed":
+            return "Delayed";
+            break;
+        case "Late":
+            return "Late";
+            break;
+        case "Hold":
+            return "Hold";
+            break;        
+        default:
+            return  "other";
+            break;
+    }
   }
 
   //bind all buttons
@@ -232,6 +221,16 @@ $(document).ready(function() {
       return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
     }
   });
+
+  //scroll to the searched location 
+  //usage: $("#selector").scrollTo();
+  $.fn.scrollView = function () {
+    return this.each(function () {
+        $('html, body').animate({
+            scrollTop: $(this).offset().top
+        }, 500);
+    });
+  }
 
   //initial code to run once
   function init(){
